@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.IO.Compression;
 
 namespace AOS2Ripper.Parsers
 {
@@ -25,7 +26,50 @@ namespace AOS2Ripper.Parsers
                 return "Specified file doesn't exist!";
             }
 
+            ZipFile.ExtractToDirectory(zipPath, dir);
 
+            string[] foils = Directory.GetFiles(dir, "*" + Constants.DAT_EXT, SearchOption.AllDirectories);
+            foreach (string file in foils)
+            {
+                string fileNoExt = file.Substring(file.Length - (Constants.DAT_EXT.Length));
+
+                using (XORParser parser = new XORParser(file, fileNoExt + Constants.IMG_EXT))
+                {
+                    parser.CryptFiles();
+                }
+            }
+
+            return null;
+        }
+
+        public string Folder2Pak(string fileName)
+        {
+            if (!Directory.Exists(dir))
+            {
+                return "Specified directory doesn't exist!";
+            }
+
+            if (!File.Exists(zipPath))
+            {
+                return "Specified folder doesn't exist!";
+            }
+
+            string[] foils = Directory.GetFiles(dir, "*" + Constants.IMG_EXT, SearchOption.AllDirectories);
+            foreach (string file in foils)
+            {
+                string fileNoExt = file.Substring(file.Length - (Constants.IMG_EXT.Length));
+
+                using (XORParser parser = new XORParser(file, fileNoExt + Constants.DAT_EXT))
+                {
+                    parser.CryptFiles();
+                }
+            }
+
+            ZipFile.CreateFromDirectory(zipPath, fileName);
+
+            File.Move(zipPath, dir + fileName + Constants.PAK_EXT);
+
+            return null;
         }
     }
 }

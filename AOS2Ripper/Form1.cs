@@ -16,5 +16,10 @@ namespace AOS2Ripper
         {
             InitializeComponent();
         }
+
+        private void openFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+
+        }
     }
 }
