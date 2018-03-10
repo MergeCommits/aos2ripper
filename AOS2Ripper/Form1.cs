@@ -103,6 +103,7 @@ namespace AOS2Ripper
         {
             if (processInProgress) { return; }
             processInProgress = true;
+            txtConsole.Clear();
 
             Thread th = new Thread(PAK_2_DIR);
             th.Name = "PAK2DIR";
@@ -123,12 +124,24 @@ namespace AOS2Ripper
         }
 
         /// <summary>
+        /// Opens a directory to package.
+        /// </summary>
+        private void btnSavePak_Click(object sender, EventArgs e)
+        {
+            if (inputDirDialog.ShowDialog() == DialogResult.OK)
+            {
+                txtSavePak.Text = inputDirDialog.SelectedPath;
+            }
+        }
+
+        /// <summary>
         /// Parses folder tp .PAK.
         /// </summary>
         private void btnDir2Pak_Click(object sender, EventArgs e)
         {
             if (processInProgress) { return; }
             processInProgress = true;
+            txtConsole.Clear();
 
             if (savePakFile.ShowDialog() == DialogResult.OK)
             {
@@ -140,7 +153,7 @@ namespace AOS2Ripper
 
         private void DIR_2_PAK()
         {
-            PakManager parser = new PakManager(savePakFile.FileName, txtOutputDir.Text);
+            PakManager parser = new PakManager(savePakFile.FileName, txtSavePak.Text);
 
             string uh = parser.Folder2Pak();
             if (uh != null)

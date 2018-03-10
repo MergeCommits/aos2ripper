@@ -47,6 +47,7 @@
             this.outputDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.savePakFile = new System.Windows.Forms.SaveFileDialog();
             this.txtConsole = new System.Windows.Forms.RichTextBox();
+            this.inputDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -189,6 +190,7 @@
             this.btnSavePak.TabIndex = 6;
             this.btnSavePak.Text = "...";
             this.btnSavePak.UseVisualStyleBackColor = true;
+            this.btnSavePak.Click += new System.EventHandler(this.btnSavePak_Click);
             // 
             // label4
             // 
@@ -239,6 +241,10 @@
             // outputDirDialog
             // 
             this.outputDirDialog.Description = "Choose a directory to save the .pak to";
+            // 
+            // savePakFile
+            // 
+            this.savePakFile.Filter = "AOS2 Data File (*.pak)|*.pak";
             // 
             // txtConsole
             // 
@@ -292,6 +298,7 @@
         private System.Windows.Forms.Button btn_FOLDER_2_PAK;
         private System.Windows.Forms.SaveFileDialog savePakFile;
         private System.Windows.Forms.RichTextBox txtConsole;
+        private System.Windows.Forms.FolderBrowserDialog inputDirDialog;
     }
 }
 

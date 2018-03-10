@@ -2,6 +2,7 @@
 using System.Drawing;
 using System.IO;
 using System.IO.Compression;
+using System.Linq;
 using System.Threading;
 
 namespace AOS2Ripper.Parsers
@@ -45,7 +46,7 @@ namespace AOS2Ripper.Parsers
             Program.WriteDebugText("Converting .dat files...");
             foreach (string file in foils)
             {
-                string fileNoExt = file.Substring(0, file.Length - (Constants.DAT_EXT.Length));
+                string fileNoExt = Path.ChangeExtension(file, null);
 
                 string inFilePath = file.Substring(dir.Length + 1);
                 string outFilePath = "NaN";
@@ -67,7 +68,7 @@ namespace AOS2Ripper.Parsers
                 }
             }
 
-            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " extracted succesfully!\n\n", Color.Green);
+            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " extracted succesfully!", Color.Green);
             return null;
         }
 
@@ -78,10 +79,12 @@ namespace AOS2Ripper.Parsers
                 return "Specified directory doesn't exist!";
             }
 
-            string[] foils = Directory.GetFiles(dir, "*" + Constants.IMG_EXT, SearchOption.AllDirectories);
+            Program.WriteDebugText("Encrypting files...");
+            string[] foils = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
+                .Where(s => s.EndsWith(Constants.IMG_EXT) || s.EndsWith(Constants.GENERIC_EXT)).ToArray();
             foreach (string file in foils)
             {
-                string fileNoExt = file.Substring(file.Length - (Constants.IMG_EXT.Length));
+                string fileNoExt = Path.ChangeExtension(file, null);
 
                 string inFilePath = file.Substring(dir.Length + 1);
                 string outFilePath = fileNoExt.Substring(dir.Length + 1) + Constants.DAT_EXT;
@@ -92,7 +95,8 @@ namespace AOS2Ripper.Parsers
                         parser.CryptFiles();
                     }
 
-                    Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, Color.AliceBlue);
+                    File.Delete(file);
+                    Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, Color.DarkCyan);
                 }
                 catch (Exception e)
                 {
@@ -101,11 +105,17 @@ namespace AOS2Ripper.Parsers
                 }
             }
 
-            Program.WriteDebugText("\n\nCreating .pak file...");
-            ZipFile.CreateFromDirectory(dir, zipPath);
+            Program.WriteDebugText("\nExtraction complete.");
+            Program.WriteDebugText("Creating .pak file...");
 
-            //File.Move(zipPath, dir + fileName + Constants.PAK_EXT);
-            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " created succesfully!\n\n", Color.Green);
+            // User is prompted about overwriting prior to reaching this point.
+            if (File.Exists(zipPath))
+            {
+                File.Delete(zipPath);
+            }
+            ZipFile.CreateFromDirectory(dir, zipPath);
+            
+            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " created succesfully!", Color.Green);
 
             return null;
         }
