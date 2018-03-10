@@ -7,7 +7,6 @@ namespace AOS2Ripper.Parsers
     public class XORParser : IDisposable
     {
         private readonly byte[] PNG_HEADER = { 0x89, 0x50, 0x4E, 0x47 };
-        private const int CHUNK_SIZE = 1024 * 4;
         private string key;
 
         private BinaryReader inputFile;
@@ -72,29 +71,12 @@ namespace AOS2Ripper.Parsers
         public void CryptFiles()
         {
             byte[] bytKey = Encoding.ASCII.GetBytes(key);
+            byte[] bytes = inputFile.ReadBytes((int)inputFile.BaseStream.Length);
 
-            long chunkCount = inputFile.BaseStream.Length / CHUNK_SIZE;
-            // Assuming the file's byte size is not a multiple of the chunk size, add an actually iteration
-            // for any remaining bytes.
-            if (inputFile.BaseStream.Length % CHUNK_SIZE != 0)
+            for (int i = 0; i < bytes.Length; i++)
             {
-                chunkCount++;
-            }
-
-            int currentByte = 0;
-            for (int i = 0; i < chunkCount; i++)
-            {
-                byte[] bytes = inputFile.ReadBytes((int) Math.Min(inputFile.BaseStream.Length - i, CHUNK_SIZE));
-                for (int j = 0; j < bytes.Length; j++)
-                {
-                    byte encryptKey = bytKey[currentByte % bytKey.Length];
-                    byte toEncrypt = bytes[j];
-
-                    byte encrypted = EncryptDecrypt(encryptKey, toEncrypt);
-                    outputFile.Write(encrypted);
-
-                    currentByte++;
-                }
+                byte encrypted = EncryptDecrypt(bytKey[i % bytKey.Length], bytes[i]);
+                outputFile.Write(encrypted);
             }
         }
 

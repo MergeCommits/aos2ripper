@@ -12,6 +12,8 @@ namespace AOS2Ripper.Parsers
         private string zipPath;
         private string dir;
 
+        private readonly Color parsedFileColor = Color.Blue;
+
         public PakManager(string zipPath, string dir)
         {
             this.zipPath = zipPath;
@@ -44,31 +46,33 @@ namespace AOS2Ripper.Parsers
             string[] foils = Directory.GetFiles(dir, "*" + Constants.DAT_EXT, SearchOption.AllDirectories);
             Program.WriteDebugText("\nExtraction complete.");
             Program.WriteDebugText("Converting .dat files...");
-            foreach (string file in foils)
-            {
-                string fileNoExt = Path.ChangeExtension(file, null);
 
-                string inFilePath = file.Substring(dir.Length + 1);
+            for (int i = 0; i < foils.Length; i++)
+            {
+                Program.MainForm.StepProgress(i * 100 / foils.Length);
+                string fileNoExt = Path.ChangeExtension(foils[i], null);
+
+                string inFilePath = foils[i].Substring(dir.Length + 1);
                 string outFilePath = "NaN";
                 try
                 {
-                    using (XORParser parser = new XORParser(file, fileNoExt, false))
+                    using (XORParser parser = new XORParser(foils[i], fileNoExt, false))
                     {
                         parser.CryptFiles();
                         outFilePath = parser.OutFileName.Substring(dir.Length + 1);
                     }
 
-                    File.Delete(file);
-                    Program.WriteDebugText("  Parsed file: " + inFilePath + " -> " + outFilePath, Color.DarkCyan);
+                    File.Delete(foils[i]);
+                    Program.WriteDebugText("  Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
                 }
                 catch (Exception e)
                 {
-                    Program.WriteDebugText("  Error occured with file " + Path.GetFileName(file) + "!", Color.Red);
+                    Program.WriteDebugText("  Error occured with file " + Path.GetFileName(foils[i]) + "!", Color.Red);
                     Program.WriteDebugText("  " + e.Message + " -> " + e.StackTrace, Color.Red);
                 }
             }
 
-            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " extracted succesfully!", Color.Green);
+            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " extracted successfully!", Color.Green);
             return null;
         }
 
@@ -82,21 +86,24 @@ namespace AOS2Ripper.Parsers
             Program.WriteDebugText("Encrypting files...");
             string[] foils = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                 .Where(s => s.EndsWith(Constants.IMG_EXT) || s.EndsWith(Constants.GENERIC_EXT)).ToArray();
-            foreach (string file in foils)
-            {
-                string fileNoExt = Path.ChangeExtension(file, null);
 
-                string inFilePath = file.Substring(dir.Length + 1);
+            for (int i = 0; i < foils.Length; i++)
+            {
+                Program.MainForm.StepProgress(i * 100 / foils.Length);
+
+                string fileNoExt = Path.ChangeExtension(foils[i], null);
+
+                string inFilePath = foils[i].Substring(dir.Length + 1);
                 string outFilePath = fileNoExt.Substring(dir.Length + 1) + Constants.DAT_EXT;
                 try
                 {
-                    using (XORParser parser = new XORParser(file, fileNoExt + Constants.DAT_EXT, true))
+                    using (XORParser parser = new XORParser(foils[i], fileNoExt + Constants.DAT_EXT, true))
                     {
                         parser.CryptFiles();
                     }
 
-                    File.Delete(file);
-                    Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, Color.DarkCyan);
+                    File.Delete(foils[i]);
+                    Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
                 }
                 catch (Exception e)
                 {
@@ -115,7 +122,7 @@ namespace AOS2Ripper.Parsers
             }
             ZipFile.CreateFromDirectory(dir, zipPath);
             
-            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " created succesfully!", Color.Green);
+            Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " created successfully!", Color.Green);
 
             return null;
         }

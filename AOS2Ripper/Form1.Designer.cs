@@ -43,11 +43,12 @@
             this.progressBar = new System.Windows.Forms.ProgressBar();
             this.btnPAK_2_FOLDER = new System.Windows.Forms.Button();
             this.btn_FOLDER_2_PAK = new System.Windows.Forms.Button();
+            this.txtConsole = new System.Windows.Forms.RichTextBox();
             this.inputPakDialog = new System.Windows.Forms.OpenFileDialog();
             this.outputDirDialog = new System.Windows.Forms.FolderBrowserDialog();
             this.savePakFile = new System.Windows.Forms.SaveFileDialog();
-            this.txtConsole = new System.Windows.Forms.RichTextBox();
             this.inputDirDialog = new System.Windows.Forms.FolderBrowserDialog();
+            this.bgParser = new System.ComponentModel.BackgroundWorker();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -60,7 +61,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 100F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 75F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 76F));
             this.tableLayoutPanel1.Controls.Add(this.btnOutputDir, 2, 2);
             this.tableLayoutPanel1.Controls.Add(this.btnInputFile, 2, 1);
             this.tableLayoutPanel1.Controls.Add(this.txtOutputDir, 1, 2);
@@ -233,19 +234,6 @@
             this.btn_FOLDER_2_PAK.UseVisualStyleBackColor = true;
             this.btn_FOLDER_2_PAK.Click += new System.EventHandler(this.btnDir2Pak_Click);
             // 
-            // inputPakDialog
-            // 
-            this.inputPakDialog.Filter = "AOS2 Data File (*.PAK)|*.PAK";
-            this.inputPakDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.inputPakFileDialogue_FileOk);
-            // 
-            // outputDirDialog
-            // 
-            this.outputDirDialog.Description = "Choose a directory to save the .pak to";
-            // 
-            // savePakFile
-            // 
-            this.savePakFile.Filter = "AOS2 Data File (*.pak)|*.pak";
-            // 
             // txtConsole
             // 
             this.txtConsole.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -261,6 +249,24 @@
             this.txtConsole.TabIndex = 18;
             this.txtConsole.TabStop = false;
             this.txtConsole.Text = "";
+            // 
+            // inputPakDialog
+            // 
+            this.inputPakDialog.Filter = "AOS2 Data File (*.PAK)|*.PAK";
+            this.inputPakDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.inputPakFileDialogue_FileOk);
+            // 
+            // outputDirDialog
+            // 
+            this.outputDirDialog.Description = "Choose a directory to save the .pak to";
+            // 
+            // savePakFile
+            // 
+            this.savePakFile.Filter = "AOS2 Data File (*.pak)|*.pak";
+            // 
+            // bgParser
+            // 
+            this.bgParser.WorkerReportsProgress = true;
+            this.bgParser.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgParser_DoWork);
             // 
             // SuGUI
             // 
@@ -299,6 +305,7 @@
         private System.Windows.Forms.SaveFileDialog savePakFile;
         private System.Windows.Forms.RichTextBox txtConsole;
         private System.Windows.Forms.FolderBrowserDialog inputDirDialog;
+        private System.ComponentModel.BackgroundWorker bgParser;
     }
 }
 

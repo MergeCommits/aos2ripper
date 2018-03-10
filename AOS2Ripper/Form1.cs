@@ -14,8 +14,20 @@ namespace AOS2Ripper
         public SuGUI()
         {
             InitializeComponent();
+
             tableLayoutPanel1.CellPaint += tableLayoutPanel1_CellPaint;
             txtConsole.TextChanged += txtConsole_TextChanged;
+            bgParser.RunWorkerCompleted += bgParser_RunWorkerCompleted;
+        }
+
+        public void ResetForm()
+        {
+            txtConsole.Clear();
+            progressBar.Value = 0;
+            if (!progressBar.Visible)
+            {
+                progressBar.Visible = true;
+            }
         }
 
         public void AppendConsoleText(string text, Color color)
@@ -36,6 +48,11 @@ namespace AOS2Ripper
         public void AppendConsoleText(string text)
         {
             txtConsole.Invoke(new Action(() => txtConsole.AppendText(text + "\n")));
+        }
+
+        public void StepProgress(int percentage)
+        {
+            bgParser.ReportProgress(percentage);
         }
 
         #region Event Handlers
@@ -103,24 +120,8 @@ namespace AOS2Ripper
         {
             if (processInProgress) { return; }
             processInProgress = true;
-            txtConsole.Clear();
 
-            Thread th = new Thread(PAK_2_DIR);
-            th.Name = "PAK2DIR";
-            th.Start();
-        }
-
-        private void PAK_2_DIR()
-        {
-            PakManager parser = new PakManager(txtInputFile.Text, txtOutputDir.Text);
-
-            string uh = parser.Pak2Folder();
-            if (uh != null)
-            {
-                MessageBox.Show(uh, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-
-            processInProgress = false;
+            bgParser.RunWorkerAsync("PAK_2_FOLDER");
         }
 
         /// <summary>
@@ -135,32 +136,54 @@ namespace AOS2Ripper
         }
 
         /// <summary>
-        /// Parses folder tp .PAK.
+        /// Parses folder to .PAK.
         /// </summary>
         private void btnDir2Pak_Click(object sender, EventArgs e)
         {
             if (processInProgress) { return; }
-            processInProgress = true;
-            txtConsole.Clear();
+
+            if (string.IsNullOrWhiteSpace(txtSavePak.Text))
+            {
+                MessageBox.Show("Directory field is empty.", "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
 
             if (savePakFile.ShowDialog() == DialogResult.OK)
             {
-                Thread th = new Thread(DIR_2_PAK);
-                th.Name = "DIR2PAK";
-                th.Start();
+                processInProgress = true;
+                bgParser.RunWorkerAsync("FOLDER_2_PAK");
             }
         }
 
-        private void DIR_2_PAK()
+        private void bgParser_DoWork(object sender, DoWorkEventArgs e)
         {
-            PakManager parser = new PakManager(savePakFile.FileName, txtSavePak.Text);
-
-            string uh = parser.Folder2Pak();
-            if (uh != null)
+            if (e.Argument == null)
             {
-                MessageBox.Show(uh, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            string task = (string) e.Argument;
+
+            string errorMsg = "Unknown Error";
+            if (task == "PAK_2_FOLDER")
+            {
+                PakManager parser = new PakManager(txtInputFile.Text, txtOutputDir.Text);
+                errorMsg = parser.Pak2Folder();
+            }
+            else if (task == "FOLDER_2_PAK")
+            {
+                PakManager parser = new PakManager(savePakFile.FileName, txtSavePak.Text);
+                errorMsg = parser.Folder2Pak();
             }
 
+
+            if (errorMsg != null)
+            {
+                MessageBox.Show(errorMsg, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void bgParser_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
             processInProgress = false;
         }
 
