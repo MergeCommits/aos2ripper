@@ -87,6 +87,7 @@ namespace AOS2Ripper.Parsers
             Program.WriteDebugText("Encrypting files...");
             string[] foils = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
                 .Where(s => s.EndsWith(Constants.IMG_EXT) || s.EndsWith(Constants.GENERIC_EXT)).ToArray();
+            string tempDir = GetTemporaryDirectory();
 
             for (int i = 0; i < foils.Length; i++)
             {
@@ -96,12 +97,16 @@ namespace AOS2Ripper.Parsers
                 string outFilePath = fileNoExt.Substring(dir.Length + 1) + Constants.DAT_EXT;
                 try
                 {
-                    using (XORParser parser = new XORParser(foils[i], fileNoExt + Constants.DAT_EXT, true))
+                    if (!Directory.Exists(tempDir + outFilePath))
+                    {
+                        Directory.CreateDirectory(tempDir + Path.GetDirectoryName(outFilePath));
+                    }
+
+                    using (XORParser parser = new XORParser(foils[i], tempDir + outFilePath, true))
                     {
                         parser.CryptFiles();
                     }
-
-                    File.Delete(foils[i]);
+                    
                     Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
                 }
                 catch (Exception e)
@@ -121,11 +126,27 @@ namespace AOS2Ripper.Parsers
             {
                 File.Delete(zipPath);
             }
-            ZipFile.CreateFromDirectory(dir, zipPath);
-            
+            ZipFile.CreateFromDirectory(tempDir, zipPath);
+
+            Program.WriteDebugText("Cleaning up...");
+            Directory.Delete(tempDir, true);
+
             Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " created successfully!", Color.Green);
 
             return null;
+        }
+
+        private string GetTemporaryDirectory()
+        {
+            string tempDirectory = null;
+            do
+            {
+                tempDirectory = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
+            }
+            while (Directory.Exists(tempDirectory));
+
+            Directory.CreateDirectory(tempDirectory);
+            return tempDirectory + "\\";
         }
     }
 }

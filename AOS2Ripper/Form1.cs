@@ -34,12 +34,15 @@ namespace AOS2Ripper
 
         public void AppendConsoleText(string text, Color color)
         {
-            txtConsole.SelectionStart = txtConsole.TextLength;
-            txtConsole.SelectionLength = 0;
+            txtConsole.Invoke(new Action(() =>
+            {
+                txtConsole.SelectionStart = txtConsole.TextLength;
+                txtConsole.SelectionLength = 0;
 
-            txtConsole.SelectionColor = color;
-            AppendConsoleText(text);
-            txtConsole.SelectionColor = txtConsole.ForeColor;
+                txtConsole.SelectionColor = color;
+                AppendConsoleText(text);
+                txtConsole.SelectionColor = txtConsole.ForeColor;
+            }));
         }
 
         public void AppendConsoleText(string text)
@@ -53,6 +56,7 @@ namespace AOS2Ripper
         }
 
         #region Event Handlers
+
         private void Form1_Load(object sender, EventArgs e)
         {
             // no smaller than design time size
