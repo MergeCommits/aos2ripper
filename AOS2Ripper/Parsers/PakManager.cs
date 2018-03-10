@@ -49,7 +49,6 @@ namespace AOS2Ripper.Parsers
 
             for (int i = 0; i < foils.Length; i++)
             {
-                Program.MainForm.StepProgress(i * 100 / foils.Length);
                 string fileNoExt = Path.ChangeExtension(foils[i], null);
 
                 string inFilePath = foils[i].Substring(dir.Length + 1);
@@ -70,6 +69,8 @@ namespace AOS2Ripper.Parsers
                     Program.WriteDebugText("  Error occured with file " + Path.GetFileName(foils[i]) + "!", Color.Red);
                     Program.WriteDebugText("  " + e.Message + " -> " + e.StackTrace, Color.Red);
                 }
+
+                Program.MainForm.StepProgress((i + 1) * 100 / foils.Length);
             }
 
             Program.WriteDebugText("\n" + Path.GetFileName(zipPath) + " extracted successfully!", Color.Green);
@@ -89,8 +90,6 @@ namespace AOS2Ripper.Parsers
 
             for (int i = 0; i < foils.Length; i++)
             {
-                Program.MainForm.StepProgress(i * 100 / foils.Length);
-
                 string fileNoExt = Path.ChangeExtension(foils[i], null);
 
                 string inFilePath = foils[i].Substring(dir.Length + 1);
@@ -110,6 +109,8 @@ namespace AOS2Ripper.Parsers
                     Program.WriteDebugText("Error occured with file " + inFilePath + "!", Color.Red);
                     Program.WriteDebugText(e.Message + " -> " + e.StackTrace, Color.Red);
                 }
+
+                Program.MainForm.StepProgress((i + 1) * 100 / foils.Length);
             }
 
             Program.WriteDebugText("\nExtraction complete.");

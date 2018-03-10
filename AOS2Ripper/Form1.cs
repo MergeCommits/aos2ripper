@@ -17,31 +17,28 @@ namespace AOS2Ripper
 
             tableLayoutPanel1.CellPaint += tableLayoutPanel1_CellPaint;
             txtConsole.TextChanged += txtConsole_TextChanged;
+            
+            bgParser.ProgressChanged += bgParser_ProgressChanged;
             bgParser.RunWorkerCompleted += bgParser_RunWorkerCompleted;
         }
 
-        public void ResetForm()
+        private void ResetForm()
         {
-            txtConsole.Clear();
-            progressBar.Value = 0;
+            txtConsole.Invoke(new Action(() => txtConsole.Text = string.Empty));
+            progressBar.Invoke(new Action(() => progressBar.Value = 0));
             if (!progressBar.Visible)
             {
-                progressBar.Visible = true;
+                progressBar.Invoke(new Action(() => progressBar.Visible = true));
             }
         }
 
         public void AppendConsoleText(string text, Color color)
         {
-            txtConsole.Invoke(new Action(() => AppendConsoleWithColor(text, color)));
-        }
-
-        private void AppendConsoleWithColor(string text, Color color)
-        {
             txtConsole.SelectionStart = txtConsole.TextLength;
             txtConsole.SelectionLength = 0;
 
             txtConsole.SelectionColor = color;
-            txtConsole.AppendText(text + "\n");
+            AppendConsoleText(text);
             txtConsole.SelectionColor = txtConsole.ForeColor;
         }
 
@@ -163,6 +160,7 @@ namespace AOS2Ripper
             }
             string task = (string) e.Argument;
 
+            ResetForm();
             string errorMsg = "Unknown Error";
             if (task == "PAK_2_FOLDER")
             {
@@ -175,11 +173,16 @@ namespace AOS2Ripper
                 errorMsg = parser.Folder2Pak();
             }
 
-
             if (errorMsg != null)
             {
                 MessageBox.Show(errorMsg, "Error!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
             }
+        }
+
+        private void bgParser_ProgressChanged(object sender, ProgressChangedEventArgs e)
+        {
+            progressBar.Value = e.ProgressPercentage;
         }
 
         private void bgParser_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)

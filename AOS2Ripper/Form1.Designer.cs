@@ -213,6 +213,7 @@
             this.progressBar.Name = "progressBar";
             this.progressBar.Size = new System.Drawing.Size(835, 23);
             this.progressBar.TabIndex = 14;
+            this.progressBar.Visible = false;
             // 
             // btnPAK_2_FOLDER
             // 

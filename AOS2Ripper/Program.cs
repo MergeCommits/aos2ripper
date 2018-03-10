@@ -26,22 +26,22 @@ namespace AOS2Ripper
             Application.Run(MainForm);
         }
 
-        public static void WriteDebugText(string line)
-        {
-#if DEBUG
-            Console.WriteLine(line);
-#endif
-
-            MainForm.AppendConsoleText(line);
-        }
-
         public static void WriteDebugText(string line, Color color)
         {
 #if DEBUG
             Console.WriteLine(line);
 #endif
 
-            MainForm.AppendConsoleText(line, color);
+            if (color == Color.Black)
+            {
+                MainForm.AppendConsoleText(line);
+            }
+            else
+            {
+                MainForm.AppendConsoleText(line, color);
+            }
         }
+
+        public static void WriteDebugText(string line) => WriteDebugText(line, Color.Black);
     }
 }
