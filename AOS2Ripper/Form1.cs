@@ -5,6 +5,7 @@ using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
 using System.Collections.Generic;
+using System.IO;
 
 namespace AOS2Ripper
 {
@@ -69,7 +70,7 @@ namespace AOS2Ripper
 
         private void InitConsoleUpdateThread()
         {
-            if (consoleUpdateThread == null || consoleUpdateThread.ThreadState==ThreadState.Stopped)
+            if (consoleUpdateThread == null || consoleUpdateThread.ThreadState == ThreadState.Stopped)
             {
                 consoleUpdateThread = new Thread(ConsoleUpdate);
                 consoleUpdateThread.Start();
@@ -78,26 +79,31 @@ namespace AOS2Ripper
 
         private void ConsoleUpdate()
         {
+            // Gets the currently queued messages.
             List<ConsoleMessage> cConsoleMessages;
             lock (queuedMessages)
             {
                 cConsoleMessages = new List<ConsoleMessage>(queuedMessages);
             }
 
+            // Add them to the console.
             while (cConsoleMessages.Count > 0)
             {
                 Thread.Sleep(100);
 
                 int count = cConsoleMessages.Count;
-                for (int i=0;i<count;i++)
+                for (int i = 0; i < count; i++)
                 {
-                    string text = cConsoleMessages[i].Text+"\n";
+                    string text = cConsoleMessages[i].Text + "\n";
+
+                    // If the succeeded messages use the same color then put them into one string.
                     Color selectionColor = cConsoleMessages[i].Color;
-                    while (i<count-1 && cConsoleMessages[i+1].Color==selectionColor)
+                    while (i < count - 1 && cConsoleMessages[i + 1].Color == selectionColor)
                     {
-                        text += cConsoleMessages[i + 1].Text+"\n";
+                        text += cConsoleMessages[i + 1].Text + "\n";
                         i++;
                     }
+
                     txtConsole.Invoke(new Action(() =>
                     {
                         txtConsole.SelectionStart = txtConsole.TextLength;
@@ -111,10 +117,13 @@ namespace AOS2Ripper
                 
                 cConsoleMessages.Clear();
 
+                // Removes the added messages from the queue.
                 lock (queuedMessages)
                 {
                     queuedMessages.RemoveRange(0, count);
-                    if (queuedMessages.Count>0)
+                    
+                    // Add any new messages back into the list.
+                    if (queuedMessages.Count > 0)
                     {
                         cConsoleMessages.AddRange(queuedMessages);
                     }
@@ -173,6 +182,12 @@ namespace AOS2Ripper
         private void inputPakFileDialogue_FileOk(object sender, CancelEventArgs e)
         {
             txtInputFile.Text = inputPakDialog.FileName;
+
+            // If the output directory space is empty then set the directory of the .pak to it.
+            if (string.IsNullOrWhiteSpace(txtOutputDir.Text))
+            {
+                txtOutputDir.Text = Path.GetDirectoryName(txtInputFile.Text);
+            }
         }
 
         /// <summary>
@@ -205,6 +220,7 @@ namespace AOS2Ripper
             if (inputDirDialog.ShowDialog() == DialogResult.OK)
             {
                 txtSavePak.Text = inputDirDialog.SelectedPath;
+                savePakFile.InitialDirectory = Path.GetDirectoryName(txtSavePak.Text);
             }
         }
 
