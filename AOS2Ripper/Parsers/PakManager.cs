@@ -107,18 +107,18 @@ namespace AOS2Ripper.Parsers
                         parser.CryptFiles();
                     }
                     
-                    Program.WriteDebugText("Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
+                    Program.WriteDebugText("  Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
                 }
                 catch (Exception e)
                 {
-                    Program.WriteDebugText("Error occured with file " + inFilePath + "!", Color.Red);
+                    Program.WriteDebugText("  Error occured with file " + inFilePath + "!", Color.Red);
                     Program.WriteDebugText(e.Message + " -> " + e.StackTrace, Color.Red);
                 }
 
                 Program.MainForm.StepProgress((i + 1) * 100 / foils.Length);
             }
 
-            Program.WriteDebugText("\nExtraction complete.");
+            Program.WriteDebugText("\nEncryption complete.");
             Program.WriteDebugText("Creating .pak file...");
 
             // User is prompted about overwriting prior to reaching this point.

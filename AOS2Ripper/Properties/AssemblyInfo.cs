@@ -5,12 +5,12 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("AOS2Ripper")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Acceleration of SuGUI 2")]
+[assembly: AssemblyDescription("A texture extractor/packager for Acceleration of Suguri 2.")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("AOS2Ripper")]
-[assembly: AssemblyCopyright("Copyright ©  2018")]
+[assembly: AssemblyCompany("Team Jorge")]
+[assembly: AssemblyProduct("Acceleration of SuGUI 2")]
+[assembly: AssemblyCopyright("Copyright © Team Jorge 2018")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
