@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Drawing;
 using System.Threading;
 using System.Windows.Forms;
+using System.Collections.Generic;
 
 namespace AOS2Ripper
 {
@@ -11,9 +12,25 @@ namespace AOS2Ripper
     {
         private bool processInProgress = false;
 
+        struct ConsoleMessage
+        {
+            public string Text;
+            public Color Color;
+
+            public ConsoleMessage(string text, Color color)
+            {
+                Text = text; Color = color;
+            }
+        }
+        private List<ConsoleMessage> queuedMessages;
+        private Thread consoleUpdateThread;
+
         public SuGUI()
         {
             InitializeComponent();
+
+            queuedMessages = new List<ConsoleMessage>();
+            consoleUpdateThread = null;
 
             tableLayoutPanel1.CellPaint += tableLayoutPanel1_CellPaint;
             txtConsole.TextChanged += txtConsole_TextChanged;
@@ -34,20 +51,75 @@ namespace AOS2Ripper
 
         public void AppendConsoleText(string text, Color color)
         {
-            txtConsole.Invoke(new Action(() =>
+            lock (queuedMessages)
             {
-                txtConsole.SelectionStart = txtConsole.TextLength;
-                txtConsole.SelectionLength = 0;
-
-                txtConsole.SelectionColor = color;
-                AppendConsoleText(text);
-                txtConsole.SelectionColor = txtConsole.ForeColor;
-            }));
+                queuedMessages.Add(new ConsoleMessage(text, color));
+            }
+            InitConsoleUpdateThread();
         }
 
         public void AppendConsoleText(string text)
         {
-            txtConsole.Invoke(new Action(() => txtConsole.AppendText(text + "\n")));
+            lock (queuedMessages)
+            {
+                queuedMessages.Add(new ConsoleMessage(text, Color.Black));
+            }
+            InitConsoleUpdateThread();
+        }
+
+        private void InitConsoleUpdateThread()
+        {
+            if (consoleUpdateThread == null || consoleUpdateThread.ThreadState==ThreadState.Stopped)
+            {
+                consoleUpdateThread = new Thread(ConsoleUpdate);
+                consoleUpdateThread.Start();
+            }
+        }
+
+        private void ConsoleUpdate()
+        {
+            List<ConsoleMessage> cConsoleMessages;
+            lock (queuedMessages)
+            {
+                cConsoleMessages = new List<ConsoleMessage>(queuedMessages);
+            }
+
+            while (cConsoleMessages.Count > 0)
+            {
+                Thread.Sleep(100);
+
+                int count = cConsoleMessages.Count;
+                for (int i=0;i<count;i++)
+                {
+                    string text = cConsoleMessages[i].Text+"\n";
+                    Color selectionColor = cConsoleMessages[i].Color;
+                    while (i<count-1 && cConsoleMessages[i+1].Color==selectionColor)
+                    {
+                        text += cConsoleMessages[i + 1].Text+"\n";
+                        i++;
+                    }
+                    txtConsole.Invoke(new Action(() =>
+                    {
+                        txtConsole.SelectionStart = txtConsole.TextLength;
+                        txtConsole.SelectionLength = 0;
+
+                        txtConsole.SelectionColor = cConsoleMessages[i].Color;
+                        txtConsole.Invoke(new Action(() => txtConsole.AppendText(text)));
+                        txtConsole.SelectionColor = txtConsole.ForeColor;
+                    }));
+                }
+                
+                cConsoleMessages.Clear();
+
+                lock (queuedMessages)
+                {
+                    queuedMessages.RemoveRange(0, count);
+                    if (queuedMessages.Count>0)
+                    {
+                        cConsoleMessages.AddRange(queuedMessages);
+                    }
+                }
+            }
         }
 
         public void StepProgress(int percentage)
