@@ -4,7 +4,7 @@ A program that allows you to extract the textures from AOS2's game data and conv
 
 Requires .NET Framework v4.6.1 which you can download here: https://www.microsoft.com/en-ca/download/details.aspx?id=49981
 
-[Download here](https://github.com/CommanderMark/aos2ripper/releases). 
+Download the latest version [here](https://github.com/CommanderMark/aos2ripper/releases). 
 
 ## Instructions
 
