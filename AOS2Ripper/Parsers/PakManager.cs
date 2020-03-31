@@ -85,37 +85,46 @@ namespace AOS2Ripper.Parsers
             }
 
             Program.WriteDebugText("Encrypting files...");
-            string[] foils = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories)
-                .Where(s => s.EndsWith(Constants.IMG_EXT) || s.EndsWith(Constants.GENERIC_EXT)).ToArray();
+            string[] files = Directory.EnumerateFiles(dir, "*.*", SearchOption.AllDirectories).ToArray();
             string tempDir = GetTemporaryDirectory();
 
-            for (int i = 0; i < foils.Length; i++)
+            for (int i = 0; i < files.Length; i++)
             {
-                string fileNoExt = Path.ChangeExtension(foils[i], null);
+                string relativeInputFilePath = files[i].Substring(dir.Length + 1);
+                string relativeOutputFilePath = files[i].Substring(dir.Length + 1);
 
-                string inFilePath = foils[i].Substring(dir.Length + 1);
-                string outFilePath = fileNoExt.Substring(dir.Length + 1) + Constants.DAT_EXT;
-                try
+                // Make the appropriate directories in the folder to be compressed.
+                if (!Directory.Exists(tempDir + relativeOutputFilePath))
                 {
-                    if (!Directory.Exists(tempDir + outFilePath))
-                    {
-                        Directory.CreateDirectory(tempDir + Path.GetDirectoryName(outFilePath));
-                    }
-
-                    using (XORParser parser = new XORParser(foils[i], tempDir + outFilePath, true))
-                    {
-                        parser.CryptFiles();
-                    }
-                    
-                    Program.WriteDebugText("  Parsed file: " + inFilePath + " -> " + outFilePath, parsedFileColor);
-                }
-                catch (Exception e)
-                {
-                    Program.WriteDebugText("  Error occured with file " + inFilePath + "!", Color.Red);
-                    Program.WriteDebugText(e.Message + " -> " + e.StackTrace, Color.Red);
+                    Directory.CreateDirectory(tempDir + Path.GetDirectoryName(relativeOutputFilePath));
                 }
 
-                Program.MainForm.StepProgress((i + 1) * 100 / foils.Length);
+                // If the file was encrypted, re-encrypt it.
+                bool success = true;
+                if (relativeOutputFilePath.EndsWith(Constants.IMG_EXT) || relativeOutputFilePath.EndsWith(Constants.GENERIC_EXT))
+                {
+                    relativeOutputFilePath = Path.ChangeExtension(relativeOutputFilePath, Constants.DAT_EXT);
+                    try
+                    {
+                        using (XORParser parser = new XORParser(files[i], tempDir + relativeOutputFilePath, true))
+                        {
+                            parser.CryptFiles();
+                        }
+                    }
+                    catch (Exception e)
+                    {
+                        success = false;
+                        Program.WriteDebugText("  Error occured with file " + relativeInputFilePath + "!", Color.Red);
+                        Program.WriteDebugText(e.Message + " -> " + e.StackTrace, Color.Red);
+                    }
+                }
+                else // Otherwise just copy the file over.
+                {
+                    File.Copy(files[i], tempDir + relativeOutputFilePath);
+                }
+
+                if (success) { Program.WriteDebugText("  Parsed file: " + relativeInputFilePath + " -> " + relativeOutputFilePath, parsedFileColor); }
+                Program.MainForm.StepProgress((i + 1) * 100 / files.Length);
             }
 
             Program.WriteDebugText("\nEncryption complete.");

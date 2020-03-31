@@ -6,11 +6,6 @@ namespace AOS2Ripper
 {
     public static class Program
     {
-        // TODO:
-        // Add progress bar.
-        // Test wrapping files.
-        // Write readme.
-        // Profit?
         public static SuGUI MainForm;
 
         /// <summary>
