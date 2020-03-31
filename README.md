@@ -2,6 +2,8 @@
 
 It rips MANY file
 
+[Download here](https://github.com/CommanderMark/aos2ripper/releases). 
+
 ## Instructions
 
 ### HOW USE?
