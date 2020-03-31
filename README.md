@@ -1,6 +1,6 @@
 # Acceleration of Suguri 2 Data Ripper
 
-It rips MANY file
+A program that allows you to extract the textures from AOS2's game data and convert it into readable image formats (in this case .png files). It also allows you to re-encrypt the image data back into a .pak file that the game can read, making sprite modifications quick to implement.
 
 Requires .NET Framework v4.6.1 which you can download here: https://www.microsoft.com/en-ca/download/details.aspx?id=49981
 
