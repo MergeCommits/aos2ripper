@@ -1,4 +1,4 @@
-# ACCELERATION OF SUGURI 2 DATA RIPPER
+# Acceleration of Suguri 2 Data Ripper
 
 It rips MANY file
 
