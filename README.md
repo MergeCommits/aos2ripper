@@ -31,16 +31,16 @@ https://cdn.discordapp.com/attachments/344026969555599361/422255057254219778/unk
 
 If you replace an image file with a smaller image (say, swap a 2048x2048 image with a 512x512 one), then that image will proceed to tile until it fits the required dimensions. Not really sure why the game does that but whatever.
 
-## The program isn't working
+### The program isn't working
 
 If an update to the game was recently pushed, then it might be possible that they changed the encryption key the game uses. At that point I'd need to update the software so that it works as intended.
 
 If you're getting some funky errors however, feel free to open a new ticket on this repo.
 
-## License
+### License
 This project is licensed under the zlib license. Please refer to the [LICENSE.md](LICENSE.md) file for more details.
 
-## Additional Credits
+### Additional Credits
 juanjp600 - For figuring out the encryption key for AOS2's data to begin with, effectively making this ripper possible. Also helped with optimizing the program's extraction speed.
 
 RoadHog 360 - For figuring out the original encryption method used for "100% Orange Juice", which made finding the key for AOS2 possible.
