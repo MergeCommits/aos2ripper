@@ -1,0 +1,20 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWindowsForms>true</UseWindowsForms>
+    <PackageIcon></PackageIcon>
+    <ApplicationIcon>Icon.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Content\Icon.ico" />
+    <None Remove="Content\Icon.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Content\" />
+  </ItemGroup>
+
+</Project>

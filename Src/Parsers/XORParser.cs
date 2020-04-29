@@ -2,7 +2,7 @@
 using System.IO;
 using System.Text;
 
-namespace AOS2Ripper.Parsers
+namespace AOS2Ripper
 {
     public class XORParser : IDisposable
     {

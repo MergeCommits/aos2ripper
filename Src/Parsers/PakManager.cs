@@ -3,9 +3,8 @@ using System.Drawing;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Threading;
 
-namespace AOS2Ripper.Parsers
+namespace AOS2Ripper
 {
     public class PakManager
     {

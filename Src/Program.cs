@@ -26,7 +26,6 @@ namespace AOS2Ripper
 #if DEBUG
             Console.WriteLine(line);
 #endif
-
             if (color == Color.Black)
             {
                 MainForm.AppendConsoleText(line);
