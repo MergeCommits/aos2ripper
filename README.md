@@ -27,7 +27,6 @@ This is where the ripper comes in. Open up "AOS2Ripper.exe" and look at the left
 As mentioned above, let's assume you want to replace the menu title with "YOUR_IMAGE.png." Inside the texture folder, navigate to the "menuMdl" folder. In there should be "ttl_logo.png", proudly displaying the game's logo. Overwrite that file with "YOUR_IMAGE.png" by renaming it to "ttl_logo.png" and then you're set to re-encrypt the files.
 
 Go back into "AOS2Ripper.exe" and look at the right-hand column of the program titled "Convert Directory to AOS2 Texture Data." From here, select the texture folder to be the directory, then once you hit "Package Data" you'll be prompted to choose a location to save the .pak to. Name it "texture" and save it in the same directory as the original "texture.pak" (remember to back up the original file first! I just rename it to "texture_OLD.pak"). Once you select the save location the program will begin encrypting the files. After the encryption is complete, load up AOS2 and proudly see "YOUR_IMAGE.png" on the menu screen.
-https://cdn.discordapp.com/attachments/344026969555599361/422255057254219778/unknown.png
 
 ## Other notes
 
